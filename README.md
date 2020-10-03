@@ -1,68 +1,83 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Поиск изображений
 
-## Available Scripts
+Напиши приложение поиска изображений по ключевому слову. Превью рабочего приложения смотри по ссылке.
 
-In the project directory, you can run:
+Создай компоненты <Searchbar>, <ImageGallery>, <ImageGalleryItem>, <Loader>, <Button> и <Modal>. Готовые стили компонентов можно взять в файле styles.css и подправить под себя, если необходимо.
 
-### `npm start`
+preview
+Инструкция Pixabay API
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Для HTTP-запросов используй публичный сервис поиска изображений Pixabay. Зарегистрируйся и получи приватный ключ доступа.
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+URL-строка HTTP-запроса.
 
-### `npm test`
+https://pixabay.com/api/?q=что_искать&page=номер_страницы&key=твой_ключ&image_type=photo&orientation=horizontal&per_page=12
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Pixabay API поддерживает пагинацию, по умолчанию параметр page равен 1. Пусть в ответе приходит по 12 объектов, установлено в параметре per_page. Не забудь что при поиске по новому ключевому слову, необходимо сбрасывать значение page в 1.
 
-### `npm run build`
+В ответе от апи приходит массив объектов, в которых тебе интересны только следущие свойства.
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+    id - уникальный идентификатор
+    webformatURL - ссылка на маленькое изображение для списка карточек
+    largeImageURL - ссылка на большое изображение для модального окна
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+Описание компонента Searchbar
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Компонент принимает один проп onSubmit - функцию для передачи значения инпута при сабмите формы. Создает DOM-элемент следующей структуры.
 
-### `npm run eject`
+<header className="Searchbar">
+  <form className="SearchForm">
+    <button type="submit" className="SearchForm-button">
+      <span className="SearchForm-button-label">Search</span>
+    </button>
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+    <input
+      className="SearchForm-input"
+      type="text"
+      autocomplete="off"
+      autofocus
+      placeholder="Search images and photos"
+    />
+  </form>
+</header>
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Описание компонента ImageGallery
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Список карточек изображений. Создает DOM-элемент следующей структуры.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+<ul className="ImageGallery">
+  <!-- Набор <li> с изображениями -->
+</ul>
 
-## Learn More
+Описание компонента ImageGalleryItem
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Компонент элемента списка с изображением. Создает DOM-элемент следующей структуры.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+<li className="ImageGalleryItem">
+  <img src="" alt="" className="ImageGalleryItem-image" />
+</li>
 
-### Code Splitting
+Описание компонента Button
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
+При нажатии на кнопку Load more должна догружаться следующая порция изображений и рендериться вместе с предыдущими. После загрузки и рендера новой партии изображений страница должна плавно скролиться. Для скрола используй следующий код.
 
-### Analyzing the Bundle Size
+window.scrollTo({
+  top: document.documentElement.scrollHeight,
+  behavior: 'smooth',
+});
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
+Кнопка должна рендерится только тогда, когда есть какие-то загруженные изобаржения. Если массив изображений пуст, кнопка не рендерится.
+Описание компонента Loader
 
-### Making a Progressive Web App
+Компонент спинера, отображется пока идет загрузка изобаржений. Используй любой готовый компонент, например react-loader-spinner или любой другой.
+Описание компонента Modal
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
+При клике по элементу галереи должно открываться модальное окно с темным оверлеем и отображаться большая версия изображения. Модальное окно должно закрываться по нажатию клавиши ESC или по клику на оверлее.
 
-### Advanced Configuration
+Внешний вид похож на функционал этого VanillaJS-плагина, только вместо белого модального окна рендерится изображение (в примере нажми Run). Анимацию делать не нужно!
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+<div className="Overlay">
+  <div className="Modal">
+    <img src="" alt="" />
+  </div>
+</div>
